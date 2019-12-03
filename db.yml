@@ -1,0 +1,39 @@
+---
+- hosts: web02
+  become: yes
+  
+  tasks:                 
+          - name: Install package MySQL-python
+            get_url: url=http://rpmfind.net/linux/Mandriva/official/10.1/x86_64/media/contrib/MySQL-python-0.9.2-4mdk.x86_64.rpm dest=/root
+
+          - name: install python3
+            get_url: url=https://www.python.org/ftp/python/3.4.3/Python-3.4.3.tar.xz dest=/root
+
+          - name: unarchive python3
+            unarchive: src=/root/Python-3.4.3.tar.xz dest=/root remote_src=true 
+          
+          - name: install python3-pip
+            yum: name=python3-pip state=present
+            
+          - name: pip package  
+            pip: name=PyMySQL
+
+          - name: Download sources
+            get_url: url=https://dev.mysql.com/get/mysql80-community-release-el7-1.noarch.rpm dest=/root/
+          
+          - name: Install package
+            yum: name=/root/mysql80-community-release-el7-1.noarch.rpm state=present
+          
+          - name: Install MySQLserver
+            get_url: url=http://rpmfind.net/linux/centos/6.10/os/x86_64/Packages/mysql-server-5.1.73-8.el6_8.x86_64.rpm dest=/root
+
+          - name: mysql client
+            yum: name=MySQL-client state=present
+          
+          - name: Create a new database with name bobdata
+            mysql_db: name=bobdata state=present
+          
+          - name: Create a new database with name test1
+            mysql_db:
+                    name: test1
+                    state: present

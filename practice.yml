@@ -1,0 +1,42 @@
+---
+- hosts: web01
+  become: yes
+
+  tasks:
+          - name: install apache2
+            apt: name=apache2 state=present
+
+          - name: start apache2 service
+            service: name=apache2 state=started enabled=yes
+
+          - name: install nginx
+            apt: name=nginx state=present
+
+          - name: download tomcat software
+            get_url: url=http://mirrors.estointernet.in/apache/tomcat/tomcat-8/v8.5.49/bin/apache-tomcat-8.5.49.tar.gz dest=/root
+
+          - name: download jdk software on client
+            apt: name=openjdk-8-jdk state=present
+            
+          - name: upgrade
+            apt: name="*" state=latest
+
+          - name: update
+            apt: update_cache=yes
+            
+          - name: unarchive tomcat software
+            unarchive: src=/root/apache-tomcat-8.5.49.tar.gz dest=/root remote_src=true
+
+          - name: start tomcat software
+            shell: /root/apache-tomcat-8.5.49/bin/startup.sh
+
+          - name: copy vprofile-v1.war file to client
+            copy: src=/root/vprofile-v1.war dest=/root/apache-tomcat-8.5.49/webapps/
+
+          - name: stop tomcat
+            shell: /root/apache-tomcat-8.5.49/bin/shutdown.sh
+
+          - name: start tomcat
+            shell: /root/apache-tomcat-8.5.49/bin/startup.sh
+
+
